@@ -8,6 +8,12 @@ function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading, error } = useSelector((state) => state.auth);
+  const [redirectMessage, setRedirectMessage] = useState(() => {
+    // Read and clear the one-time expired-session message set before redirecting here.
+    const message = sessionStorage.getItem("authRedirectMessage");
+    sessionStorage.removeItem("authRedirectMessage");
+    return message;
+  });
 
   const [formData, setFormData] = useState({
     username: "",
@@ -22,6 +28,7 @@ function Login() {
   };
 
   const getErrorMessage = () => {
+    if (redirectMessage) return redirectMessage;
     if (!error) return null;
     if (error.detail) return error.detail;
     return "Login failed.";
@@ -29,6 +36,7 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setRedirectMessage(null);
 
   // Here, dispatch runs the loginUser async action with the form data.
   // Since loginUser makes an API request, we await the returned Promise to get the result.
