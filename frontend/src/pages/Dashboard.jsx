@@ -15,7 +15,9 @@ function Dashboard() {
 
   const getErrorMessage = () => {
     if (!error) return null;
+
     if (error.detail) return error.detail;
+
     return "Something went wrong.";
   };
 

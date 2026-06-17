@@ -154,3 +154,6 @@ CORS_ALLOWED_ORIGINS = os.getenv(
     "CORS_ALLOWED_ORIGINS",
     "http://localhost:5173"
 ).split(",")
+
+# Allow the browser to accept and send the HttpOnly refresh_token cookie.
+CORS_ALLOW_CREDENTIALS = True

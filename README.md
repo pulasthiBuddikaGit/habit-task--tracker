@@ -87,11 +87,10 @@ Streak logic was tested using the Django Python shell by manually inserting comp
 
 - The backend uses SimpleJWT.
 - Login returns an access token and refresh token.
-- The frontend stores tokens in `localStorage` for simplicity.
+- The access token is stored in frontend state/localStorage so it can be attached to protected API requests. The refresh token is stored as an HttpOnly cookie set by the backend during login, instead of storing it in localStorage. This improves security because JavaScript cannot directly read the refresh token.
 - The access token is sent with protected API requests using an Axios interceptor.
 - Logout is handled on the frontend by removing tokens and clearing Redux state.
 - Automatic refresh-token handling is left out of scope for this small assignment.
-- In a production version, the refresh token should ideally be stored in an HttpOnly secure cookie instead of `localStorage`.
 
 ## Setup Instructions for a Clean Machine
 
@@ -289,10 +288,9 @@ How ChatGPT was used:
 
 AI output I reviewed and corrected:
 
-- I clarified that the app should use “Habit” as the main entity instead of “Task”.
+- One improvement I added after reviewing the initial AI-guided implementation was moving the refresh token out of localStorage and into an HttpOnly cookie. The initial approach stored both access and refresh tokens in localStorage, but I changed the refresh-token handling to follow a safer authentication pattern.
 - I confirmed that one habit can have many completions, but only one completion per date.
 - I adjusted the authentication approach to keep logout simple on the frontend.
-- I documented localStorage token storage as acceptable for this assignment but not ideal for production.
 
 ## Out of Scope
 

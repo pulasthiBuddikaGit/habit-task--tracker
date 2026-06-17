@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { logout } from "../features/auth/authSlice";
+import { logout, logoutUser } from "../features/auth/authSlice";
 import { clearHabits } from "../features/habits/habitsSlice";
 
 function Navbar() {
@@ -8,8 +8,10 @@ function Navbar() {
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     //runs the reducer func logout and clearHabits to clear the user and habits data from the state and localStorage, then navigates the user to the login page.
+    //logoutUser asks the backend to delete the HttpOnly refresh_token cookie before frontend state is cleared.
+    await dispatch(logoutUser());
     dispatch(logout());
     dispatch(clearHabits());
     navigate("/login");
