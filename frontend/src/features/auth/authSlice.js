@@ -4,7 +4,6 @@ import api from "../../api/axios";
 const initialState = {
   user: JSON.parse(localStorage.getItem("user")) || null,
   accessToken: localStorage.getItem("accessToken") || null,
-  refreshToken: localStorage.getItem("refreshToken") || null,
   loading: false,
   error: null,
 };
@@ -35,12 +34,11 @@ export const loginUser = createAsyncThunk(
       };
 
       localStorage.setItem("accessToken", response.data.access);
-      localStorage.setItem("refreshToken", response.data.refresh);
       localStorage.setItem("user", JSON.stringify(user));
 
+      // The backend now stores refresh_token in an HttpOnly cookie, so JS only keeps the access token.
       return {
         accessToken: response.data.access,
-        refreshToken: response.data.refresh,
         user,
       };
     } catch (error) {
@@ -50,6 +48,12 @@ export const loginUser = createAsyncThunk(
     }
   }
 );
+
+export const logoutUser = createAsyncThunk("auth/logoutUser", async () => {
+  // Ask the backend to delete the HttpOnly refresh_token cookie.
+  const response = await api.post("/auth/logout/");
+  return response.data;
+});
 
 const authSlice = createSlice({
   name: "auth",
@@ -62,10 +66,8 @@ const authSlice = createSlice({
     logout: (state) => {
       state.user = null;
       state.accessToken = null;
-      state.refreshToken = null;
 
       localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
       localStorage.removeItem("user");
     },
     clearAuthError: (state) => {
@@ -96,7 +98,6 @@ const authSlice = createSlice({
         state.loading = false;
         state.user = action.payload.user;
         state.accessToken = action.payload.accessToken;
-        state.refreshToken = action.payload.refreshToken;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
